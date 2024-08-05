@@ -1,1 +1,3 @@
-    updateRound();
+(async () => {
+  firstPlayer = await getFirstPlayer();
+})();

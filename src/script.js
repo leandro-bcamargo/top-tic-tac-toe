@@ -1,42 +1,70 @@
-const readline = require('readline');
+const readline = require('readline/promises');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const {stdin: input, stdout: output} = require('node:process');
 
-
+const rl = readline.createInterface({input, output});
 
 const gameboard = ['','','','','','','','',''];
 
 let round = 1;
-let firstPlayer = getFirstPlayer();
-let currentPlayer = round === 1 ? getFirstPlayer() : getNextPlayer();
-let isGameOver = false;
 
-function getFirstPlayer() {
-  return new Promise((resolve, reject) => {
-    rl.question("Who should play first, X or O?", (answer) => {
-      if (answer !== "X" && answer !== "O") reject(new Error('Invalid choice; you should pick either X or O'))
-      else resolve(answer);
-    })
-  })
+let firstPlayer;
+
+(async () => {
+  firstPlayer = await getFirstPlayer();
+})();
+
+async function getFirstPlayer() {
+  try {
+    const answer = await rl.question("Who should play first, X or O?");
+    if (answer !== 'X' && answer !== 'O') {
+      throw new Error('Invalid choice: you should pick either X or O.');
+    }
+    return answer;
+  } catch(error) {
+    console.log(error.message);
+  } finally {
+    rl.close();
+  }
 }
+
+let currentPlayer;
+
+(async () => {
+  currentPlayer = await getCurrentPlayer();
+})
+
+async function getCurrentPlayer() {
+  let currentPlayer;
+  if (round === 1) {
+    currentPlayer = await getFirstPlayer();
+  } else {
+    currentPlayer = getNextPlayer();
+  }
+  return currentPlayer;
+}
+
+let isGameOver = false;
 
 function updateGameboard(position) {
   gameboard[position] = currentPlayer === 'O' ? 'O' : 'X';
 }
 
-function getPosition() {
+async function getPosition() {
   const availablePositions = [1,2,3,4,5,6,7,8,9];
-  let position = new Promise((resolve, reject) => {
-    rl.question("What position would you like to create a mark on?", (answer) => {
-      if (!(availablePositions.includes(answer))) reject(new Error('Invalid position. Please enter a number between 1 and 9'));
-      else if (gameboard[answer]) reject(new Error('That position has already been marked. Please pick another position'));
-      else resolve(answer);
-    })
-  });
-  return parseInt(position) - 1;
+  try {
+    const position = await rl.question("What position would you like to create a mark on?");
+    if (!(availablePositions.includes(answer))) {
+      throw new Error('Invalid position. Please enter a number between 1 and 9');
+    } else if (gameboard[answer]) {
+      throw new Error('That position has already been marked. Please pick another position');
+    };
+    return parseInt(position) - 1;
+  } catch (error) {
+    console.log(error.message);
+  } finally {
+    rl.close();
+  }
 }
 
 function getNextPlayer() {
@@ -73,9 +101,9 @@ function displayGameboard() {
   console.log(gameboard);
 }
 
-function playGame(firstPlayer) {
+async function playGame(firstPlayer) {
   while (!isGameOver) {
-    const position = getPosition();
+    const position = await getPosition();
     updateGameboard(position);
     displayGameboard();
     updateRound();
