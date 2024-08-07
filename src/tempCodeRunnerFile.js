@@ -1,3 +1,3 @@
 (async () => {
-  firstPlayer = await getFirstPlayer();
-})();
+//   currentPlayer = await getCurrentPlayer();
+// })();

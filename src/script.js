@@ -2,42 +2,27 @@ const readline = require('readline/promises');
 
 const {stdin: input, stdout: output} = require('node:process');
 
-const rl = readline.createInterface({input, output});
-
 const gameboard = ['','','','','','','','',''];
 
 let round = 1;
 
-let firstPlayer;
+let currentPlayer;
 
-(async () => {
-  firstPlayer = await getFirstPlayer();
-})();
-
-async function getFirstPlayer() {
+async function getFirstPlayer(rl) {
   try {
-    const answer = await rl.question("Who should play first, X or O?");
+    const answer = (await rl.question("Who should play first, X or O?\n")).toUpperCase();
     if (answer !== 'X' && answer !== 'O') {
       throw new Error('Invalid choice: you should pick either X or O.');
     }
     return answer;
   } catch(error) {
     console.log(error.message);
-  } finally {
-    rl.close();
   }
 }
 
-let currentPlayer;
-
-(async () => {
-  currentPlayer = await getCurrentPlayer();
-})
-
-async function getCurrentPlayer() {
-  let currentPlayer;
+async function getCurrentPlayer(rl) {
   if (round === 1) {
-    currentPlayer = await getFirstPlayer();
+    currentPlayer = await getFirstPlayer(rl);
   } else {
     currentPlayer = getNextPlayer();
   }
@@ -46,25 +31,23 @@ async function getCurrentPlayer() {
 
 let isGameOver = false;
 
-function updateGameboard(position) {
+function updateGameboard(position, currentPlayer) {
   gameboard[position] = currentPlayer === 'O' ? 'O' : 'X';
 }
 
-async function getPosition() {
+async function getPosition(rl) {
   const availablePositions = [1,2,3,4,5,6,7,8,9];
   try {
-    const position = await rl.question("What position would you like to create a mark on?");
-    if (!(availablePositions.includes(answer))) {
-      throw new Error('Invalid position. Please enter a number between 1 and 9');
-    } else if (gameboard[answer]) {
-      throw new Error('That position has already been marked. Please pick another position');
+    const position = Number(await rl.question("What position would you like to create a mark on? Choose from 1 to 9.\n"));
+    if (!(availablePositions.includes(position))) {
+      throw new Error('Invalid position. Please enter a number between 1 and 9.\n');
+    } else if (gameboard[position-1]) {
+      throw new Error('That position has already been marked. Please pick another position.\n');
     };
     return parseInt(position) - 1;
   } catch (error) {
     console.log(error.message);
-  } finally {
-    rl.close();
-  }
+  } 
 }
 
 function getNextPlayer() {
@@ -75,22 +58,18 @@ function updateRound() {
   round++;
 }
 
-function checkIfGameOver() {
-  if (checkForWin() || checkForDraw()) return true;
+function checkIfGameOver(currentPlayer) {
+  if (checkForWin(currentPlayer) || checkForDraw()) return true;
 }
 
-function checkForWin() {
+function checkForWin(currentPlayer) {
   const winningCombos = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6],
   ];
 
-  for (let winningCombo of winningCombos) {
-    if (winningCombo.every(position => gameboard[position] === currentPlayer)) return true;
-  }
-
-  return false;
+  return winningCombos.some(winningCombo => winningCombo.every(position => gameboard[position] === currentPlayer));
 }
 
 function checkForDraw() {
@@ -98,21 +77,36 @@ function checkForDraw() {
 }
 
 function displayGameboard() {
-  console.log(gameboard);
-}
-
-async function playGame(firstPlayer) {
-  while (!isGameOver) {
-    const position = await getPosition();
-    updateGameboard(position);
-    displayGameboard();
-    updateRound();
-    isGameOver = checkIfGameOver();
+  let formattedGameboard = [];
+  for (let i = 0; i < gameboard.length; i+=3) {
+    formattedGameboard.push(gameboard.slice(i, i+3))
   }
-  console.log(`${currentPlayer} has won the match after ${round} rounds`);
+
+  console.log(formattedGameboard);
 }
 
-playGame();
+async function playGame() {
+  const rl = readline.createInterface({input, output});
+  try {
+    while (!isGameOver) {
+      currentPlayer = await getCurrentPlayer(rl);
+      const position = await getPosition(rl);
+      updateGameboard(position, currentPlayer);
+      displayGameboard();
+      updateRound();
+      isGameOver = checkIfGameOver(currentPlayer);
+    }
+    console.log(`${currentPlayer} has won the match after ${round} rounds`);
+  } catch (error) {
+    console.log(error.message);
+  } finally {
+  rl.close();
+  }
+}
+
+(async () => {
+  await playGame();
+})();
 
 const playerX = {
   isMyTurn: false,
