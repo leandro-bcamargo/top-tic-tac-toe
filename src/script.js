@@ -1,4 +1,4 @@
-const cells = document.querySelectorAll("[data-cell]");
+const cells = [...document.querySelectorAll("[data-cell]")];
 
 let currentPlayer;
 
@@ -30,7 +30,6 @@ function setUpBoard() {
 }
 
 function checkDraw() {
-  console.log("cells:", cells);
   return cells.every(cell => cell.textContent);
 }
 
@@ -48,7 +47,6 @@ function handleClick(e) {
     alert("It's a draw!")
     setUpBoard();
   } else {
-    console.log("trocou")
     switchCurrentPlayer();
   }
 }
