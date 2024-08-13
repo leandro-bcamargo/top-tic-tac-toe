@@ -51,6 +51,26 @@ function handleClick(e) {
   }
 }
 
+function handleOkX() {
+  const inputValue = document.querySelector("#player-x").value;
+  const name = document.querySelector(".player-name-x");
+  name.textContent = `${inputValue} (X)`;
+}
+
+function handleOkO() {
+  const inputValue = document.querySelector("#player-o").value;
+  const name = document.querySelector(".player-name-o");
+  name.textContent = `${inputValue} (O)`;
+}
+
+function setUpEventListeners() {
+  const okBtnPlayerX = document.querySelector("#ok-btn-x");
+  const okBtnPlayerO = document.querySelector("#ok-btn-o");
+  okBtnPlayerX.addEventListener('click', handleOkX);
+  okBtnPlayerO.addEventListener('click', handleOkO);
+}
+
 (() => {
   setUpBoard();
+  setUpEventListeners();
 })();

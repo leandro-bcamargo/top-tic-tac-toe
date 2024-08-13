@@ -10,11 +10,9 @@ body {
 .players {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20vh;
     justify-content: space-around;
     height: 20vh;
     /* border: 1px red solid; */
-    gap: 0;
 }
 
 .player {
