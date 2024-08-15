@@ -2,13 +2,13 @@ const cells = [...document.querySelectorAll("[data-cell]")];
 
 let currentPlayer;
 
-function setStartingPlayer() {
-  let startingPlayer = prompt("Who should play first, X or O?").toUpperCase();
-  while (startingPlayer !== "X" && startingPlayer !== "O") {
-    startingPlayer = prompt("Invalid choice. Please select either X or O").toUpperCase();
-  }
-  currentPlayer = startingPlayer;
-}
+// function setStartingPlayer() {
+//   let startingPlayer = prompt("Who should play first, X or O?").toUpperCase();
+//   while (startingPlayer !== "X" && startingPlayer !== "O") {
+//     startingPlayer = prompt("Invalid choice. Please select either X or O").toUpperCase();
+//   }
+//   currentPlayer = startingPlayer;
+// }
 
 function checkWin(player) {
   const winPatterns = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
@@ -26,7 +26,6 @@ function setUpBoard() {
     cell.addEventListener('click', handleClick, {once: true}
     )
   })
-  setStartingPlayer();
 }
 
 function checkDraw() {
@@ -63,11 +62,20 @@ function handleOkO() {
   name.textContent = `${inputValue} (O)`;
 }
 
+function handleFirstPlayer(e) {
+  const firstPlayer = e.target.textContent;
+  currentPlayer = firstPlayer === 'X' ? 'X' : 'O';
+}
+
 function setUpEventListeners() {
   const okBtnPlayerX = document.querySelector("#ok-btn-x");
   const okBtnPlayerO = document.querySelector("#ok-btn-o");
   okBtnPlayerX.addEventListener('click', handleOkX);
   okBtnPlayerO.addEventListener('click', handleOkO);
+  const oFirstBtn = document.querySelector("#o-first-btn");
+  const xFirstBtn = document.querySelector("#x-first-btn");
+  oFirstBtn.addEventListener('click', handleFirstPlayer, {once: true});
+  xFirstBtn.addEventListener('click', handleFirstPlayer, {once: true});
 }
 
 (() => {
