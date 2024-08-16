@@ -2,14 +2,6 @@ const cells = [...document.querySelectorAll("[data-cell]")];
 
 let currentPlayer;
 
-// function setStartingPlayer() {
-//   let startingPlayer = prompt("Who should play first, X or O?").toUpperCase();
-//   while (startingPlayer !== "X" && startingPlayer !== "O") {
-//     startingPlayer = prompt("Invalid choice. Please select either X or O").toUpperCase();
-//   }
-//   currentPlayer = startingPlayer;
-// }
-
 function checkWin(player) {
   const winPatterns = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
@@ -23,10 +15,17 @@ function checkWin(player) {
 function setUpBoard() {
   cells.forEach(cell => {
     cell.textContent = "";
-    cell.addEventListener('click', handleClick, {once: true}
-    )
+    cell.addEventListener('click', (e) => {
+      try {
+        handleClick(e);
+      } catch (error) {
+        const result = document.querySelector("#result");
+        result.textContent = error.message;
+      }
+    }), {once: true}
   })
 }
+
 
 function checkDraw() {
   return cells.every(cell => cell.textContent);
@@ -37,29 +36,30 @@ function switchCurrentPlayer() {
 }
 
 function handleClick(e) {
+  checkPlayers();
   const cell = e.target;
   cell.textContent = currentPlayer;
   if (checkWin(currentPlayer)) {
-    alert(`${currentPlayer} wins!`);
+    showWinner(currentPlayer);
     setUpBoard();
   } else if (checkDraw()) {
-    alert("It's a draw!")
+    showDraw();
     setUpBoard();
   } else {
     switchCurrentPlayer();
-  }
+  } 
 }
 
 function handleOkX() {
-  const inputValue = document.querySelector("#player-x").value;
-  const name = document.querySelector(".player-name-x");
-  name.textContent = `${inputValue} (X)`;
+  const inputValue = document.querySelector("#player-x-input").value;
+  const name = document.querySelector("#player-x-paragraph");
+  name.textContent = `Player X: ${inputValue} --- Total Score: xScore`;
 }
 
 function handleOkO() {
-  const inputValue = document.querySelector("#player-o").value;
-  const name = document.querySelector(".player-name-o");
-  name.textContent = `${inputValue} (O)`;
+  const inputValue = document.querySelector("#player-o-input").value;
+  const name = document.querySelector("#player-o-paragraph");
+  name.textContent = `Player O: ${inputValue} --- Total Score: oScore`;
 }
 
 function handleFirstPlayer(e) {
@@ -78,7 +78,33 @@ function setUpEventListeners() {
   xFirstBtn.addEventListener('click', handleFirstPlayer, {once: true});
 }
 
+function showWinner(player) {
+  const result = document.querySelector("#result");
+  const winnerName = document.querySelector(`#player-${player.toLowerCase()}-paragraph`).textContent.split(" ")[2];
+  result.textContent = `${winnerName} has won!`;
+}
+
+function showDraw() {
+  const result = document.querySelector("#result");
+  result.textContent = "It's a draw!";
+}
+
+function checkPlayers() {
+  const playerX = document.querySelector("#player-x-paragraph").textContent;
+  const playerO = document.querySelector("#player-o-paragraph").textContent;
+  if (!playerO || !playerX) {
+    throw new Error("You must enter both player names before playing!");
+  }
+  clearResult();
+}
+
+function clearResult() {
+  const result = document.querySelector("#result");
+  result.textContent = "";
+}
+
 (() => {
-  setUpBoard();
-  setUpEventListeners();
+    setUpBoard();
+    setUpEventListeners();
+    clearResult();
 })();
