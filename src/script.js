@@ -1,6 +1,8 @@
 const cells = [...document.querySelectorAll("[data-cell]")];
 
-let currentPlayer;
+let currentPlayer = "X";
+let xScore = 0;
+let oScore = 0;
 
 function checkWin(player) {
   const winPatterns = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
@@ -22,7 +24,7 @@ function setUpBoard() {
         const result = document.querySelector("#result");
         result.textContent = error.message;
       }
-    }), {once: true}
+    }, {once: true})
   })
 }
 
@@ -41,6 +43,7 @@ function handleClick(e) {
   cell.textContent = currentPlayer;
   if (checkWin(currentPlayer)) {
     showWinner(currentPlayer);
+    increaseScore(currentPlayer);
     setUpBoard();
   } else if (checkDraw()) {
     showDraw();
@@ -53,13 +56,13 @@ function handleClick(e) {
 function handleOkX() {
   const inputValue = document.querySelector("#player-x-input").value;
   const name = document.querySelector("#player-x-paragraph");
-  name.textContent = `Player X: ${inputValue} --- Total Score: xScore`;
+  name.textContent = `Player X: ${inputValue} --- Total Score: 0`;
 }
 
 function handleOkO() {
   const inputValue = document.querySelector("#player-o-input").value;
   const name = document.querySelector("#player-o-paragraph");
-  name.textContent = `Player O: ${inputValue} --- Total Score: oScore`;
+  name.textContent = `Player O: ${inputValue} --- Total Score: 0`;
 }
 
 function handleFirstPlayer(e) {
@@ -101,6 +104,14 @@ function checkPlayers() {
 function clearResult() {
   const result = document.querySelector("#result");
   result.textContent = "";
+}
+
+function increaseScore(player) {
+  const name = document.querySelector(`#player-${player.toLowerCase()}-paragraph`);
+  const arrLength = name.textContent.split(" ").length;
+  const previousScore = Number(name.textContent.split(" ")[arrLength - 1]);
+  const currentScore = previousScore + 1;
+  name.textContent = name.textContent.split(" ").slice(0, arrLength - 1).join(" ") + " " + currentScore;
 }
 
 (() => {
