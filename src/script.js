@@ -81,8 +81,14 @@ function setUpEventListeners() {
 }
 
 function updatePlayerDisplay(player) {
-  const name = document.querySelector(`#player-${player.toLowerCase()}-paragraph`);
-  name.textContent = `Player ${player}: ${players[player].name} --- Total Score: ${players[player].score}`;
+  console.log("player:", player)
+  const playerName = document.querySelector(`.player-${player.toLowerCase()}-name`);
+  const playerType = document.querySelector(`.player-${player.toLowerCase()}-type`);
+  const playerScore = document.querySelector(`.player-${player.toLowerCase()}-score`);
+
+  playerName.textContent = players[player].name;
+  playerType.textContent = `Player ${player}`;
+  playerScore.textContent = `Score: ${players[player].score}`;
 }
 
 function showWinner(player) {

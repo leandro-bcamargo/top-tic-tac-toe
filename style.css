@@ -52,3 +52,50 @@ body {
     justify-content: space-between;
     width: 20%;
 }
+
+.player-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f3f4f6;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.player-x-name, .player-o-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.player-x-type, .player-o-type {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 10px;
+}
+
+.player-x-score, .player-o-score {
+    background-color: #3b82f6;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
